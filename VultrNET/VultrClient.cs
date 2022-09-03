@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Diagnostics.SymbolStore;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
-using Flurl.Http.Configuration;
-using Flurl.Util;
 using VultrNET.Models.Account;
 using VultrNET.Models.Applications;
 using VultrNET.Models.Backups;

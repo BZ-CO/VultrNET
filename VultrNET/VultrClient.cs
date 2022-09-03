@@ -194,7 +194,7 @@ namespace VultrNET
                     .SetQueryParamIfAvailable("type", type.ToLowerInvariant())
                     .GetAsync<GetAvailableBareMetalUpgrades>(_token));
         
-        public async Task<GetVNCBareMetal> GetAvailableUpgradesForBareMetal(string id) =>
+        public async Task<GetVNCBareMetal> GetVNCForBareMetal(string id) =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(BareMetalsEndpoint)

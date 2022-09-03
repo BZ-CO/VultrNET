@@ -3,11 +3,12 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Flurl" Version="3.0.6" />
-      <PackageReference Include="Flurl.Http" Version="4.0.0-pre2" />
+      <PackageReference Include="Flurl.Http" Version="3.2.4" />
+      <PackageReference Include="System.Text.Json" Version="6.0.5" />
     </ItemGroup>
 
 </Project>

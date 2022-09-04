@@ -5,6 +5,12 @@ Unofficial wrapper for Vultr API v2
 ---
 #### Initializing client and getting account information
 ```csharp
-var vultr = new VultrClient("C3B2VM2IQ67WSJES62MCALB3EWOMG2YAGWYA");
+var vultr = new VultrClient("your-vultr-api-key");
 var account = await vultr.GetAccountInfoAsync();
+```
+#### Creating new bare metal instance
+```csharp
+var createBarMetal =
+    await vultr.CreateBareMetalInstance(
+        new CreateBareMetal("ams", "vbm-4c-32gb", appId: 3, label: "foo", enableIPv6: false));
 ```

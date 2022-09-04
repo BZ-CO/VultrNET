@@ -7,6 +7,7 @@ using VultrNET.Models.Applications;
 using VultrNET.Models.Backups;
 using VultrNET.Models.BareMetals;
 using VultrNET.Models.BareMetals.Requests;
+using VultrNET.Models.Billing;
 
 namespace VultrNET
 {
@@ -17,6 +18,7 @@ namespace VultrNET
         private const string ApplicationsEndoint = "applications";
         private const string BackupsEndpoint = "backups";
         private const string BareMetalsEndpoint = "bare-metals";
+        private const string BillingEndpoint = "billing";
         private readonly string _apiKey;
 
         public VultrClient(string apiKey)
@@ -31,7 +33,9 @@ namespace VultrNET
                     .GetAsync<GetAccountInfo>(_apiKey));
 
         public async Task<ListApplications> ListApplications(
-            string applicationType, int page = 150, string cursor = "") =>
+            string applicationType,
+            int page = 150,
+            string cursor = "") =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(ApplicationsEndoint)
@@ -111,7 +115,7 @@ namespace VultrNET
                     .AppendPathSegment(id)
                     .AppendPathSegment("start")
                     .PostAsync(_apiKey));
-        
+
         public async Task<IFlurlResponse> RebootBareMetal(string id) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -119,7 +123,7 @@ namespace VultrNET
                     .AppendPathSegment(id)
                     .AppendPathSegment("reboot")
                     .PostAsync(_apiKey));
-        
+
         public async Task<ReinstallBareMetal> ReinstallBareMetal(string id) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -127,7 +131,7 @@ namespace VultrNET
                     .AppendPathSegment(id)
                     .AppendPathSegment("reinstall")
                     .PostAsync<ReinstallBareMetal>(_apiKey));
-        
+
         public async Task<IFlurlResponse> HaltBareMetal(string id) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -135,7 +139,7 @@ namespace VultrNET
                     .AppendPathSegment(id)
                     .AppendPathSegment("halt")
                     .PostAsync(_apiKey));
-        
+
         public async Task<GetBareMetalBandwidth> GetBareMetalBandwidth(string id) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -143,28 +147,28 @@ namespace VultrNET
                     .AppendPathSegment(id)
                     .AppendPathSegment("bandwidth")
                     .GetAsync<GetBareMetalBandwidth>(_apiKey));
-        
+
         public async Task<IFlurlResponse> HaltBareMetals(BareMetals ids) =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(BareMetalsEndpoint)
                     .AppendPathSegment("halt")
                     .PostAsync(_apiKey));
-        
+
         public async Task<IFlurlResponse> RebootMetals(BareMetals ids) =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(BareMetalsEndpoint)
                     .AppendPathSegment("reboot")
                     .PostAsync(_apiKey));
-        
+
         public async Task<IFlurlResponse> StartBareMetals(BareMetals ids) =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(BareMetalsEndpoint)
                     .AppendPathSegment("start")
                     .PostAsync(_apiKey));
-        
+
         public async Task<GetBareMetalUserData> GetBareMetalUserData(string id) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -172,8 +176,9 @@ namespace VultrNET
                     .AppendPathSegment(id)
                     .AppendPathSegment("user-data")
                     .GetAsync<GetBareMetalUserData>(_apiKey));
-        
-        public async Task<GetAvailableBareMetalUpgrades> GetAvailableUpgradesForBareMetal(string id, string type = "") =>
+
+        public async Task<GetAvailableBareMetalUpgrades>
+            GetAvailableUpgradesForBareMetal(string id, string type = "") =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(BareMetalsEndpoint)
@@ -181,7 +186,7 @@ namespace VultrNET
                     .AppendPathSegment("upgrades")
                     .SetQueryParamIfAvailable("type", type.ToLowerInvariant())
                     .GetAsync<GetAvailableBareMetalUpgrades>(_apiKey));
-        
+
         public async Task<GetVNCBareMetal> GetVNCForBareMetal(string id) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -189,6 +194,37 @@ namespace VultrNET
                     .AppendPathSegment(id)
                     .AppendPathSegment("vnc")
                     .GetAsync<GetVNCBareMetal>(_apiKey));
+
+        public async Task<ListBillingHistory> ListBillingHistory() =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(BillingEndpoint)
+                    .AppendPathSegment("history")
+                    .GetAsync<ListBillingHistory>(_apiKey));
+
+        public async Task<ListInvoices> ListInvoices() =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(BillingEndpoint)
+                    .AppendPathSegment("invoices")
+                    .GetAsync<ListInvoices>(_apiKey));
+
+        public async Task<GetInvoice> GetInvoice(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(BillingEndpoint)
+                    .AppendPathSegment("invoices")
+                    .AppendPathSegment(id)
+                    .GetAsync<GetInvoice>(_apiKey));
+
+        public async Task<GetInvoiceItems> GetInvoiceItems(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(BillingEndpoint)
+                    .AppendPathSegment("invoices")
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("items")
+                    .GetAsync<GetInvoiceItems>(_apiKey));
 
         private static T MakeRequest<T>(Func<T> f) => f();
     }

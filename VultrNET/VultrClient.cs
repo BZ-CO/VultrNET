@@ -68,11 +68,11 @@ namespace VultrNET
                     .SetPagination(page, cursor)
                     .GetAsync<ListBareMetalInstances>(_apiKey));
 
-        public async Task<BareMetal> CreateBareMetalInstance(CreateBareMetal instance) =>
+        public async Task<CreateBareMetalResponse> CreateBareMetalInstance(CreateBareMetal instance) =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(BareMetalsEndpoint)
-                    .PostAsync<BareMetal>(_apiKey, instance));
+                    .PostAsync<CreateBareMetalResponse>(_apiKey, instance));
 
         public async Task<GetBareMetal> GetBareMetal(string id) =>
             await MakeRequest(() =>

@@ -43,6 +43,13 @@ namespace VultrNET
                 .WithOAuthBearerToken(token)
                 .PostAsync();
         }
+        
+        public static Task<IFlurlResponse> PostAsync(this Url url, object body, string token)
+        {
+            return url
+                .WithOAuthBearerToken(token)
+                .PostJsonAsync(body);
+        }
 
         public static Task<IFlurlResponse> PatchAsync(this Url url, object body, string token)
         {

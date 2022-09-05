@@ -8,6 +8,8 @@ using VultrNET.Models.Backups;
 using VultrNET.Models.BareMetals;
 using VultrNET.Models.BareMetals.Requests;
 using VultrNET.Models.Billing;
+using VultrNET.Models.BlockStorage;
+using VultrNET.Models.BlockStorage.Requests;
 
 namespace VultrNET
 {
@@ -19,6 +21,7 @@ namespace VultrNET
         private const string BackupsEndpoint = "backups";
         private const string BareMetalsEndpoint = "bare-metals";
         private const string BillingEndpoint = "billing";
+        private const string BlockStorageEndpoint = "blocks";
         private readonly string _apiKey;
 
         public VultrClient(string apiKey)
@@ -225,6 +228,55 @@ namespace VultrNET
                     .AppendPathSegment(id)
                     .AppendPathSegment("items")
                     .GetAsync<GetInvoiceItems>(_apiKey));
+
+        public async Task<ListBlockStorages> ListBlockStorages() =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(BlockStorageEndpoint)
+                    .GetAsync<ListBlockStorages>(_apiKey));
+
+        public async Task<GetBlockStorage> CreateBlockStorage(CreateBlockStorage instance) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(BlockStorageEndpoint)
+                    .PostAsync<GetBlockStorage>(_apiKey, instance));
+
+        public async Task<GetBlockStorage> GetBlockStorage(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(BlockStorageEndpoint)
+                    .AppendPathSegment(id)
+                    .GetAsync<GetBlockStorage>(_apiKey));
+        
+        public async Task<IFlurlResponse> DeleteBlockStorage(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(BlockStorageEndpoint)
+                    .AppendPathSegment(id)
+                    .DeleteAsync(_apiKey));
+        
+        public async Task<IFlurlResponse> UpdateBlockStorage(string id, UpdateBlockStorage instance) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(BlockStorageEndpoint)
+                    .AppendPathSegment(id)
+                    .PatchAsync(instance, _apiKey));
+        
+        public async Task<IFlurlResponse> AttachBlockStorage(string id, AttachBlockStorage instance) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(BlockStorageEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("attach")
+                    .PostAsync(instance, _apiKey));
+        
+        public async Task<IFlurlResponse> DetachBlockStorage(string id, bool? live = null) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(BlockStorageEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("detach")
+                    .PostAsync(new { live}, _apiKey));
 
         private static T MakeRequest<T>(Func<T> f) => f();
     }

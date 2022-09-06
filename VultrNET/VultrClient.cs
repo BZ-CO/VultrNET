@@ -10,6 +10,8 @@ using VultrNET.Models.BareMetals.Requests;
 using VultrNET.Models.Billing;
 using VultrNET.Models.BlockStorage;
 using VultrNET.Models.BlockStorage.Requests;
+using VultrNET.Models.DNS;
+using VultrNET.Models.DNS.Requests;
 
 namespace VultrNET
 {
@@ -22,6 +24,7 @@ namespace VultrNET
         private const string BareMetalsEndpoint = "bare-metals";
         private const string BillingEndpoint = "billing";
         private const string BlockStorageEndpoint = "blocks";
+        private const string DNSEndpoint = "domains";
         private readonly string _apiKey;
 
         public VultrClient(string apiKey)
@@ -247,21 +250,21 @@ namespace VultrNET
                     .AppendPathSegment(BlockStorageEndpoint)
                     .AppendPathSegment(id)
                     .GetAsync<GetBlockStorage>(_apiKey));
-        
+
         public async Task<IFlurlResponse> DeleteBlockStorage(string id) =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(BlockStorageEndpoint)
                     .AppendPathSegment(id)
                     .DeleteAsync(_apiKey));
-        
+
         public async Task<IFlurlResponse> UpdateBlockStorage(string id, UpdateBlockStorage instance) =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(BlockStorageEndpoint)
                     .AppendPathSegment(id)
                     .PatchAsync(instance, _apiKey));
-        
+
         public async Task<IFlurlResponse> AttachBlockStorage(string id, AttachBlockStorage instance) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -269,14 +272,98 @@ namespace VultrNET
                     .AppendPathSegment(id)
                     .AppendPathSegment("attach")
                     .PostAsync(instance, _apiKey));
-        
+
         public async Task<IFlurlResponse> DetachBlockStorage(string id, bool? live = null) =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(BlockStorageEndpoint)
                     .AppendPathSegment(id)
                     .AppendPathSegment("detach")
-                    .PostAsync(new { live}, _apiKey));
+                    .PostAsync(new { live }, _apiKey));
+
+        public async Task<ListDomains> ListDomains() =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(DNSEndpoint)
+                    .GetAsync<ListDomains>(_apiKey));
+
+        public async Task<GetDomain> CreateDomain(CreateDomain domain) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(DNSEndpoint)
+                    .PostAsync<GetDomain>(_apiKey, domain));
+
+        public async Task<GetDomain> GetDomain(string domain) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(DNSEndpoint)
+                    .AppendPathSegment(domain)
+                    .GetAsync<GetDomain>(_apiKey));
+
+        public async Task<IFlurlResponse> DeleteDomain(string domain) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(DNSEndpoint)
+                    .AppendPathSegment(domain)
+                    .DeleteAsync(_apiKey));
+
+        public async Task<IFlurlResponse> UpdateDomain(string domain, UpdateDomain dnsSec) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(DNSEndpoint)
+                    .AppendPathSegment(domain)
+                    .PatchAsync(dnsSec, _apiKey));
+        
+        public async Task<GetSOAInformation> GetSOAInformation(string domain) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(DNSEndpoint)
+                    .AppendPathSegment(domain)
+                    .AppendPathSegment("soa")
+                    .GetAsync<GetSOAInformation>(_apiKey));
+        
+        public async Task<GetDNSRecord> CreateDNSRecord(string domain, CreateDNSRecord record) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(DNSEndpoint)
+                    .AppendPathSegment(domain)
+                    .AppendPathSegment("records")
+                    .PostAsync<GetDNSRecord>(_apiKey, record));
+        
+        public async Task<ListDNSRecords> ListDNSRecords(string domain) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(DNSEndpoint)
+                    .AppendPathSegment(domain)
+                    .AppendPathSegment("records")
+                    .GetAsync<ListDNSRecords>(_apiKey));
+        
+        public async Task<GetDNSRecord> GetDNSRecords(string domain, string recordId) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(DNSEndpoint)
+                    .AppendPathSegment(domain)
+                    .AppendPathSegment("records")
+                    .AppendPathSegment(recordId)
+                    .GetAsync<GetDNSRecord>(_apiKey));
+        
+        public async Task<IFlurlResponse> UpdateRecord(string domain, string recordId, UpdateDNSRecord record) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(DNSEndpoint)
+                    .AppendPathSegment(domain)
+                    .AppendPathSegment("records")
+                    .AppendPathSegment(recordId)
+                    .PatchAsync(record, _apiKey));
+        
+        public async Task<IFlurlResponse> DeleteReckrd(string domain, string recordId) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(DNSEndpoint)
+                    .AppendPathSegment(domain)
+                    .AppendPathSegment("records")
+                    .AppendPathSegment(recordId)
+                    .DeleteAsync(_apiKey));
 
         private static T MakeRequest<T>(Func<T> f) => f();
     }

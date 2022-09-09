@@ -12,6 +12,8 @@ using VultrNET.Models.BlockStorage;
 using VultrNET.Models.BlockStorage.Requests;
 using VultrNET.Models.DNS;
 using VultrNET.Models.DNS.Requests;
+using VultrNET.Models.Firewall;
+using VultrNET.Models.Firewall.Requests;
 
 namespace VultrNET
 {
@@ -314,7 +316,7 @@ namespace VultrNET
                     .AppendPathSegment(DNSEndpoint)
                     .AppendPathSegment(domain)
                     .PatchAsync(dnsSec, _apiKey));
-        
+
         public async Task<GetSOAInformation> GetSOAInformation(string domain) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -322,7 +324,7 @@ namespace VultrNET
                     .AppendPathSegment(domain)
                     .AppendPathSegment("soa")
                     .GetAsync<GetSOAInformation>(_apiKey));
-        
+
         public async Task<GetDNSRecord> CreateDNSRecord(string domain, CreateDNSRecord record) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -330,7 +332,7 @@ namespace VultrNET
                     .AppendPathSegment(domain)
                     .AppendPathSegment("records")
                     .PostAsync<GetDNSRecord>(_apiKey, record));
-        
+
         public async Task<ListDNSRecords> ListDNSRecords(string domain) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -338,7 +340,7 @@ namespace VultrNET
                     .AppendPathSegment(domain)
                     .AppendPathSegment("records")
                     .GetAsync<ListDNSRecords>(_apiKey));
-        
+
         public async Task<GetDNSRecord> GetDNSRecords(string domain, string recordId) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -347,7 +349,7 @@ namespace VultrNET
                     .AppendPathSegment("records")
                     .AppendPathSegment(recordId)
                     .GetAsync<GetDNSRecord>(_apiKey));
-        
+
         public async Task<IFlurlResponse> UpdateRecord(string domain, string recordId, UpdateDNSRecord record) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -356,7 +358,7 @@ namespace VultrNET
                     .AppendPathSegment("records")
                     .AppendPathSegment(recordId)
                     .PatchAsync(record, _apiKey));
-        
+
         public async Task<IFlurlResponse> DeleteRecord(string domain, string recordId) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -365,6 +367,73 @@ namespace VultrNET
                     .AppendPathSegment("records")
                     .AppendPathSegment(recordId)
                     .DeleteAsync(_apiKey));
+
+        public async Task<ListFirewallGroups> ListFirewallGroups() =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(FirewallEndpoint)
+                    .GetAsync<ListFirewallGroups>(_apiKey));
+
+        public async Task<GetFirewallGroup> CreateFirewallGroup(string description) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(FirewallEndpoint)
+                    .PostAsync<GetFirewallGroup>(_apiKey, new { description }));
+
+        public async Task<GetFirewallGroup> GetFirewallGroup(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(FirewallEndpoint)
+                    .AppendPathSegment(id)
+                    .GetAsync<GetFirewallGroup>(_apiKey));
+
+        public async Task<IFlurlResponse> UpdateFirewallGroup(string id, string description) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(FirewallEndpoint)
+                    .AppendPathSegment(id)
+                    .PatchAsync(new { description }, _apiKey));
+
+        public async Task<IFlurlResponse> DeleteFirewallGroup(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(FirewallEndpoint)
+                    .AppendPathSegment(id)
+                    .DeleteAsync(_apiKey));
+        
+        public async Task<ListFirewallRules> ListFirewallRules(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(FirewallEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("rules")
+                    .GetAsync<ListFirewallRules>(_apiKey));
+        
+        public async Task<GetFirewallRule> CreateFirewallRule(string id, CreateFirewallRule firewallRule) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(FirewallEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("rules")
+                    .PostAsync<GetFirewallRule>(_apiKey, firewallRule));
+        
+        public async Task<IFlurlResponse> DeleteFirewallRule(string groupId, string ruleId) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(FirewallEndpoint)
+                    .AppendPathSegment(groupId)
+                    .AppendPathSegment("rules")
+                    .AppendPathSegment(ruleId)
+                    .DeleteAsync(_apiKey));
+        
+        public async Task<GetFirewallGroup> GetFirewallRule(string groupId, string ruleId) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(FirewallEndpoint)
+                    .AppendPathSegment(groupId)
+                    .AppendPathSegment("rules")
+                    .AppendPathSegment(ruleId)
+                    .GetAsync<GetFirewallGroup>(_apiKey));
 
         private static T MakeRequest<T>(Func<T> f) => f();
     }

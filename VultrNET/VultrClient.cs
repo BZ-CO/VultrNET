@@ -25,6 +25,7 @@ namespace VultrNET
         private const string BillingEndpoint = "billing";
         private const string BlockStorageEndpoint = "blocks";
         private const string DNSEndpoint = "domains";
+        private const string FirewallEndpoint = "firewalls";
         private readonly string _apiKey;
 
         public VultrClient(string apiKey)
@@ -356,7 +357,7 @@ namespace VultrNET
                     .AppendPathSegment(recordId)
                     .PatchAsync(record, _apiKey));
         
-        public async Task<IFlurlResponse> DeleteReckrd(string domain, string recordId) =>
+        public async Task<IFlurlResponse> DeleteRecord(string domain, string recordId) =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(DNSEndpoint)

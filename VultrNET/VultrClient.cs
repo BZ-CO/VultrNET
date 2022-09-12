@@ -17,6 +17,7 @@ using VultrNET.Models.Firewall;
 using VultrNET.Models.Firewall.Requests;
 using VultrNET.Models.Instances;
 using VultrNET.Models.Instances.Requests;
+using VultrNET.Utils;
 
 namespace VultrNET
 {

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
 using Flurl.Util;
 
-namespace VultrNET
+namespace VultrNET.Utils
 {
     public static class Extensions
     {

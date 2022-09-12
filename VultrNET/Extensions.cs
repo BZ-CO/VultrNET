@@ -36,14 +36,14 @@ namespace VultrNET
                     .PostJsonAsync(body)
                     .ReceiveJson<T>();
         }
-        
+
         public static Task<IFlurlResponse> PostAsync(this Url url, string token)
         {
             return url
                 .WithOAuthBearerToken(token)
                 .PostAsync();
         }
-        
+
         public static Task<IFlurlResponse> PostAsync(this Url url, object body, string token)
         {
             return url
@@ -56,6 +56,14 @@ namespace VultrNET
             return url
                 .WithOAuthBearerToken(token)
                 .PatchJsonAsync(body);
+        }
+
+        public static Task<T> PatchAsync<T>(this Url url, object body, string token)
+        {
+            return url
+                .WithOAuthBearerToken(token)
+                .PostJsonAsync(body)
+                .ReceiveJson<T>();
         }
 
         public static Task<IFlurlResponse> DeleteAsync(this Url url, string token)

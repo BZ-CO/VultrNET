@@ -10,10 +10,13 @@ using VultrNET.Models.BareMetals.Requests;
 using VultrNET.Models.Billing;
 using VultrNET.Models.BlockStorage;
 using VultrNET.Models.BlockStorage.Requests;
+using VultrNET.Models.Common;
 using VultrNET.Models.DNS;
 using VultrNET.Models.DNS.Requests;
 using VultrNET.Models.Firewall;
 using VultrNET.Models.Firewall.Requests;
+using VultrNET.Models.Instances;
+using VultrNET.Models.Instances.Requests;
 
 namespace VultrNET
 {
@@ -28,6 +31,7 @@ namespace VultrNET
         private const string BlockStorageEndpoint = "blocks";
         private const string DNSEndpoint = "domains";
         private const string FirewallEndpoint = "firewalls";
+        private const string InstancesEndpoint = "instances";
         private readonly string _apiKey;
 
         public VultrClient(string apiKey)
@@ -149,13 +153,13 @@ namespace VultrNET
                     .AppendPathSegment("halt")
                     .PostAsync(_apiKey));
 
-        public async Task<GetBareMetalBandwidth> GetBareMetalBandwidth(string id) =>
+        public async Task<BandwidthHistory> GetBareMetalBandwidth(string id) =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(BareMetalsEndpoint)
                     .AppendPathSegment(id)
                     .AppendPathSegment("bandwidth")
-                    .GetAsync<GetBareMetalBandwidth>(_apiKey));
+                    .GetAsync<BandwidthHistory>(_apiKey));
 
         public async Task<IFlurlResponse> HaltBareMetals(BareMetals ids) =>
             await MakeRequest(() =>
@@ -178,13 +182,13 @@ namespace VultrNET
                     .AppendPathSegment("start")
                     .PostAsync(_apiKey));
 
-        public async Task<GetBareMetalUserData> GetBareMetalUserData(string id) =>
+        public async Task<GetUserData> GetBareMetalUserData(string id) =>
             await MakeRequest(() =>
                 BaseUrl
                     .AppendPathSegment(BareMetalsEndpoint)
                     .AppendPathSegment(id)
                     .AppendPathSegment("user-data")
-                    .GetAsync<GetBareMetalUserData>(_apiKey));
+                    .GetAsync<GetUserData>(_apiKey));
 
         public async Task<GetAvailableBareMetalUpgrades>
             GetAvailableUpgradesForBareMetal(string id, string type = "") =>
@@ -400,7 +404,7 @@ namespace VultrNET
                     .AppendPathSegment(FirewallEndpoint)
                     .AppendPathSegment(id)
                     .DeleteAsync(_apiKey));
-        
+
         public async Task<ListFirewallRules> ListFirewallRules(string id) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -408,7 +412,7 @@ namespace VultrNET
                     .AppendPathSegment(id)
                     .AppendPathSegment("rules")
                     .GetAsync<ListFirewallRules>(_apiKey));
-        
+
         public async Task<GetFirewallRule> CreateFirewallRule(string id, CreateFirewallRule firewallRule) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -416,7 +420,7 @@ namespace VultrNET
                     .AppendPathSegment(id)
                     .AppendPathSegment("rules")
                     .PostAsync<GetFirewallRule>(_apiKey, firewallRule));
-        
+
         public async Task<IFlurlResponse> DeleteFirewallRule(string groupId, string ruleId) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -425,7 +429,7 @@ namespace VultrNET
                     .AppendPathSegment("rules")
                     .AppendPathSegment(ruleId)
                     .DeleteAsync(_apiKey));
-        
+
         public async Task<GetFirewallGroup> GetFirewallRule(string groupId, string ruleId) =>
             await MakeRequest(() =>
                 BaseUrl
@@ -434,6 +438,296 @@ namespace VultrNET
                     .AppendPathSegment("rules")
                     .AppendPathSegment(ruleId)
                     .GetAsync<GetFirewallGroup>(_apiKey));
+
+        public async Task<ListInstances> ListInstances(
+            int page = 150,
+            string cursor = "",
+            string label = "",
+            string mainIP = "",
+            string regionId = "") =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .SetQueryParamIfAvailable("label", label)
+                    .SetQueryParamIfAvailable("main_ip", mainIP)
+                    .SetQueryParamIfAvailable("region", regionId)
+                    .SetPagination(page, cursor)
+                    .GetAsync<ListInstances>(_apiKey));
+
+        public async Task<GetInstance> CreateInstance(CreateInstance instance) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .PostAsync<GetInstance>(_apiKey, instance));
+
+        public async Task<GetInstance> GetInstance(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .GetAsync<GetInstance>(_apiKey));
+
+        public async Task<GetInstance> UpdateInstance(string id, UpdateInstance instance) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .PatchAsync<GetInstance>(instance, _apiKey));
+
+        public async Task<IFlurlResponse> DeleteInstance(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .DeleteAsync(_apiKey));
+
+        public async Task<IFlurlResponse> HaltInstances(Instances instances) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment("halt")
+                    .PostAsync(instances, _apiKey));
+
+        public async Task<IFlurlResponse> RebootInstances(Instances instances) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment("reboot")
+                    .PostAsync(instances, _apiKey));
+
+        public async Task<IFlurlResponse> StartInstances(Instances instances) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment("start")
+                    .PostAsync(instances, _apiKey));
+
+        public async Task<IFlurlResponse> StartInstance(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("start")
+                    .PostAsync(_apiKey));
+
+        public async Task<IFlurlResponse> RebootInstance(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("reboot")
+                    .PostAsync(_apiKey));
+
+        public async Task<GetInstance> ReinstallInstance(string id, string? hostname = null) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("reinstall")
+                    .PostAsync<GetInstance>(_apiKey, hostname));
+
+        public async Task<BandwidthHistory> GetInstancelBandwidth(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("bandwidth")
+                    .GetAsync<BandwidthHistory>(_apiKey));
+
+        public async Task<Neighbors> GetInstanceNeighbors(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("neighbors")
+                    .GetAsync<Neighbors>(_apiKey));
+
+        public async Task<ListInstanceVPCs> ListInstanceVPCs(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("vpcs")
+                    .GetAsync<ListInstanceVPCs>(_apiKey));
+
+        public async Task<InstanceISOStatus> GetInstanceISOStatus(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("iso")
+                    .GetAsync<InstanceISOStatus>(_apiKey));
+
+        public async Task<InstanceISOStatus> AttachISOToInstance(string instanceId, AttachISO iso) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(instanceId)
+                    .AppendPathSegment("iso")
+                    .AppendPathSegment("attach")
+                    .PostAsync<InstanceISOStatus>(_apiKey, iso));
+
+        public async Task<IFlurlResponse> DetachISOFromInstance(string instanceId) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(instanceId)
+                    .AppendPathSegment("iso")
+                    .AppendPathSegment("detach")
+                    .PostAsync(_apiKey));
+
+        public async Task<IFlurlResponse> AttachVPCToInstance(string instanceId, VPCId vpcId) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(instanceId)
+                    .AppendPathSegment("vpc")
+                    .AppendPathSegment("attach")
+                    .PostAsync(vpcId, _apiKey));
+
+        public async Task<IFlurlResponse> DetachVPCFromInstance(string instanceId, VPCId vpcId) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(instanceId)
+                    .AppendPathSegment("vpc")
+                    .AppendPathSegment("detach")
+                    .PostAsync(vpcId, _apiKey));
+
+        public async Task<IFlurlResponse> SetInstanceBackupSchedule(string id, SetBackupSchedule backupSchedule) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("backup-schedule")
+                    .PostAsync(backupSchedule, _apiKey));
+
+        public async Task<GetBackupSchedule> GetInstanceBackupSchedule(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("backup-schedule")
+                    .GetAsync<GetBackupSchedule>(_apiKey));
+
+        public async Task<RestoreInstance> RestoreInstance(string instanceId, RestoreId restore) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(instanceId)
+                    .AppendPathSegment("restore")
+                    .PostAsync<RestoreInstance>(_apiKey, restore));
+
+        public async Task<ListIPv4Information> ListInstanceIPv4Information(
+            string id,
+            bool? publicNetwork = null,
+            int page = 100,
+            string cursor = "") =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("ipv4")
+                    .SetQueryParamIfAvailable("public_network", publicNetwork?.ToString())
+                    .SetPagination(page, cursor)
+                    .GetAsync<ListIPv4Information>(_apiKey));
+
+        public async Task<GetInstanceIPv4> CreateIPv4ForInstance(string instanceId, bool reboot = true) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(instanceId)
+                    .AppendPathSegment("ipv4")
+                    .PostAsync<GetInstanceIPv4>(_apiKey, new { reboot }));
+
+        public async Task<ListIPv6Information> ListInstanceIPv6Information(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("ipv6")
+                    .GetAsync<ListIPv6Information>(_apiKey));
+
+        public async Task<IFlurlResponse> CreateReverseIPv6ForInstance(string id, ReverseEntry reverseEntry) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("ipv6")
+                    .AppendPathSegment("reverse")
+                    .PostAsync(reverseEntry, _apiKey));
+
+        public async Task<ListIPv6Reverse> ListInstanceIPv6Reverse(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("ipv6")
+                    .AppendPathSegment("reverse")
+                    .GetAsync<ListIPv6Reverse>(_apiKey));
+
+        public async Task<IFlurlResponse> CreateReverseIPv4ForInstance(string id, ReverseEntry reverseEntry) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("ipv4")
+                    .AppendPathSegment("reverse")
+                    .PostAsync(reverseEntry, _apiKey));
+
+        public async Task<GetUserData> GetInstanceUserData(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("user-data")
+                    .GetAsync<GetUserData>(_apiKey));
+
+        public async Task<IFlurlResponse> HaltInstance(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("halt")
+                    .PostAsync(_apiKey));
+
+        public async Task<IFlurlResponse> SetDefaultReverseDNSEntry(string id, string ip) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("ipv4")
+                    .AppendPathSegment("reverse")
+                    .AppendPathSegment("default")
+                    .PostAsync(new { ip }, _apiKey));
+        
+        public async Task<IFlurlResponse> DeleteIPv4FromInstance(string id, string ipv4) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("ipv4")
+                    .AppendPathSegment(ipv4)
+                    .DeleteAsync(_apiKey));
+        
+        public async Task<IFlurlResponse> DeleteReverseIPv6ForInstance(string id, string ipv6) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("ipv6")
+                    .AppendPathSegment("reverse")
+                    .AppendPathSegment(ipv6)
+                    .DeleteAsync(_apiKey));
+        
+        public async Task<GetAvailableInstanceUpgrades> GetAvailableInstanceUpgrades(string id) =>
+            await MakeRequest(() =>
+                BaseUrl
+                    .AppendPathSegment(InstancesEndpoint)
+                    .AppendPathSegment(id)
+                    .AppendPathSegment("upgrades")
+                    .GetAsync<GetAvailableInstanceUpgrades>(_apiKey));
+
 
         private static T MakeRequest<T>(Func<T> f) => f();
     }

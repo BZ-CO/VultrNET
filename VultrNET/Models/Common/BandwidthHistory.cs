@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using VultrNET.Models.Common;
 
-namespace VultrNET.Models.BareMetals
+namespace VultrNET.Models.Common
 {
-    public class GetBareMetalBandwidth
+    public class BandwidthHistory
     {
-        public GetBareMetalBandwidth(Dictionary<string, Bandwidth> bandwidth)
+        public BandwidthHistory(Dictionary<string, Bandwidth> bandwidth)
         {
             Bandwidth = bandwidth;
         }
